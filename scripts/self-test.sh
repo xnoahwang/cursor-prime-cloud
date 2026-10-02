@@ -26,8 +26,8 @@ run() {
 [[ -f "$ROOT/vendor/cursor-prime/payload/behavior.mdc" ]] || fail "vendor payload missing; run scripts/sync-upstream.sh"
 [[ -f "$ROOT/overlay/cloud-mode.mdc" ]] || fail "overlay missing"
 
-python3 -m py_compile "$ROOT/scripts/project_io.py"
-pass "project_io.py compiles"
+python3 -c 'import ast, pathlib, sys; ast.parse(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))' "$ROOT/scripts/project_io.py"
+pass "project_io.py parses"
 
 run bash "$INSTALL" --help >/dev/null
 run bash "$UNINSTALL" --help >/dev/null
