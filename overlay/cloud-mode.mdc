@@ -1,0 +1,45 @@
+---
+description: Cloud-mode Plan Gate. Overrides wait-for-GO only. Upstream cursor-prime rule text is unchanged.
+alwaysApply: true
+---
+
+# Cloud mode (cursor-prime-cloud)
+
+This rule is layered on top of `behavior.mdc` and `maintainability.mdc`. Those files are the cursor-prime originals. Do not edit them to "fix" the gate.
+
+When this overlay conflicts with `behavior.mdc` or a slash command **only** about waiting for a human (`GO`, design-check approval, or a clarifying-question reply), **this overlay wins**. Task class, surgical changes, simplicity, verify receipts, delta reports, and maintainability tiers still apply.
+
+## Which mode
+
+1. If `CURSOR_PRIME_CLOUD_MODE` is `autonomous`, `plan-only`, or `interactive`, use that.
+2. Otherwise read `.cursor/cursor-prime-cloud-mode` (one word).
+3. If neither is set, use `autonomous`.
+
+A later message that is exactly `GO` approves the plan already written: implement it (unless it is already done) and produce the Verify Receipt and Delta Report. Do not ask for `GO` again.
+
+## autonomous (default)
+
+No human is waiting in this session. Do not block on `GO`, clarifying questions, or design-check approval.
+
+1. Still classify the task. On non-trivial work, still write a full `<plan>` block (Goal, Out of scope, Done when, Scale, pre-flight file list, verify) **before** the first edit to project source.
+2. Recording that plan is allowed before other edits. Put it in the pull request description under `## Plan`. If this run is not opening a pull request, write the same section to `PLAN.md` at the repo root.
+3. State assumptions in the plan instead of asking. If the request cannot be interpreted without guessing into a destructive or out-of-scope change, stop after the plan and say what is missing.
+4. Then implement. Do not wait for `GO`.
+5. When you open or update a pull request after implementation, put a **Verify Receipt** (exact command and exact output) and a **Delta Report** in the PR body under `## Verify`. A chat-only "done" does not replace that section when a PR exists.
+6. If you must touch a file that was not on the pre-flight list, add it to `## Plan` and continue. Do not wait for approval.
+
+## plan-only
+
+Do steps 1–3 of autonomous, write the plan to the PR `## Plan` section or to `PLAN.md`, then **stop**.
+
+Do not implement, and do not edit source files other than the plan record. Do not claim a Verify Receipt for work you did not run. A later `GO`, or a switch of mode to `autonomous`, is the approval to implement.
+
+## interactive
+
+A human is in the session. Follow `behavior.mdc` Plan Gate: output `<plan>` and wait for literal `GO` before state-changing tools. Still produce a Verify Receipt and a Delta Report. When a pull request is part of the task, also put those under `## Verify` in the PR body.
+
+## Do not
+
+- Do not skip the `<plan>` block on non-trivial work because nobody will type `GO`.
+- Do not skip the Verify Receipt or the Delta Report in `autonomous` mode.
+- Do not fork `behavior.mdc` or `maintainability.mdc`. Mode lives here and in `.cursor/cursor-prime-cloud-mode`.
