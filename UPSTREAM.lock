@@ -1,0 +1,5 @@
+# Pin for vendored cursor-prime payload. Written by scripts/sync-upstream.sh.
+# Update with: bash scripts/sync-upstream.sh --latest
+repo=https://github.com/xnoahwang/cursor-prime.git
+commit=256dd8bdd2b2e3a5e747c8d9be30797894cc268a
+version=0.3.3

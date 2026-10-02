@@ -1,0 +1,92 @@
+---
+description: Handoff-ready engineering standards — docs, comments, layout, successor-readable code
+alwaysApply: true
+---
+
+# Maintainability (handoff-ready)
+
+Code must run **and** be readable by the next human and the next AI. These standards ship in **global User Rules** (via `install.ps1`, merged after Coding Behavior). Intensity is **tiered** so small fixes stay cheap.
+
+## Intensity tiers
+
+Apply the matching tier; do not over-document trivial work.
+
+| Tier | When | Required |
+|------|------|----------|
+| **A — Trivial** | Read-only Q&A, or single-line typo in one known place | No extra docs |
+| **B — Edit existing** | Change files that already exist; no new public API | Surgical only; update docs **only** if behavior/layout/conventions changed and that update is on the pre-flight list |
+| **C — New surface** | New file, new module, or new public function/CLI/endpoint | Full checklist below for everything you add |
+| **D — Milestone / `/handoff` / assessment** | User ran `/handoff`, interview/CoderPad deliverable, or explicit ship/hand off | Full checklist + refresh `README.md` / `AGENTS.md` / `@project` as needed. **`submission/` trio only if** the user explicitly asked for those docs or ran `/submission-init` |
+
+**Not scope creep:** For tier C/D, module headers, public API docs, and entry docs (`README.md`, `AGENTS.md`) are part of the deliverable — even if the user only named the feature.
+
+## Public API documentation
+
+Every new **public** function, class, CLI command, or HTTP endpoint must have the language-idiomatic docstring / doc comment covering:
+
+- **Why / responsibility** (not a line-by-line restatement of the body)
+- **Parameters and return** when non-obvious
+- **Errors / failure modes** the caller must handle
+- **Invariants** or important constraints (auth, ordering, idempotency, units)
+
+Private helpers: document only non-obvious rules. Prefer clear names over noise comments.
+
+## Module / file headers
+
+Every **new** source file that owns a concern gets a short file-level comment (about 2–5 lines):
+
+- What this file is responsible for
+- What it deliberately does **not** own (if helpful)
+
+## Comments (quality bar)
+
+- Default explanation for judgment is **inline why-comments** (and public API / file headers per tiers above) — not a separate `submission/` folder.
+- Write comments for **why**, tradeoffs, and non-obvious business rules.
+- Do **not** write comments that only restate the next line of code.
+- Do **not** leave commented-out dead code in the deliverable.
+
+## Layout and naming
+
+- Follow the language’s common layout (`src/`, `lib/`, `tests/` / `__tests__`, etc.). Do not dump unrelated modules in the repo root without a reason stated in `AGENTS.md`.
+- Names: clear and conventional. No `var1`, `tmp2`, `data2`, `helper`.
+- Keep **Logic / IO / Action** separable where the codebase already does (or when starting greenfield).
+
+## Repository entry docs (minimum)
+
+Projects scaffolded by cursor-prime should keep these truthful:
+
+- **`README.md`** — what the project is, how to install/run, how to test/verify.
+- **`AGENTS.md`** — map for humans and AIs: layout, conventions, verify commands, forbidden zones.
+- **`.cursor/rules/project.mdc`** — fill tech stack, entry points, and verify commands once the stack is known (do not leave forever as `[TBD]` after the first real milestone).
+
+If this task creates the first real code in a greenfield repo and those files are still stubs, update them in the same task (list them on the pre-flight file list).
+
+## Greenfield / no prior convention
+
+When `/plan` pattern grounding finds **no** existing convention:
+
+1. **Establish** naming, error handling, test location, and layout for this repo.
+2. **Write them down** in `AGENTS.md` (and `@project` when stack is fixed).
+3. Follow that convention for the rest of the task.
+
+Do **not** invent a one-off style and leave it undocumented.
+
+## Done when (maintainability)
+
+For tier C/D non-trivial tasks, the task is incomplete until:
+
+- [ ] New public APIs have proper docstrings / doc comments
+- [ ] New modules have file headers
+- [ ] Layout matches stated conventions (or conventions were written in `AGENTS.md`)
+- [ ] `README.md` / `AGENTS.md` / `@project` reflect any new entry points, commands, or verify steps you added
+- [ ] `submission/` trio updated **only if** submission was explicitly enabled for this task (`/submission-init` or user request)
+- [ ] A successor could find “where to start” and “how to verify” without chatting with you
+
+Tier A/B: skip the checklist unless docs became wrong because of your change.
+
+## Relationship to Plan Gate / Surgical Changes
+
+- Plan Gate, pre-flight lists, and verify receipts still apply (Coding Behavior / `behavior.mdc`).
+- Surgical Changes still apply to **existing** code you were not asked to reformat.
+- Maintainability requirements for **new** surfaces override “only what was asked” when “what was asked” implies shippable code.
+- Global User Rules may already include this entire Maintainability section — do not wait for an in-repo `maintainability.mdc` to apply these standards.
